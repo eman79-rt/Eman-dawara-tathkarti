@@ -1,0 +1,6 @@
+<?php
+namespace App\Models;
+use App\Enums\EventStatus;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+class Event extends Model { protected $fillable=['organizer_id','venue_id','title','description','city','category','starts_at','status','max_per_order','poster_path']; protected function casts():array{return ['starts_at'=>'datetime','status'=>EventStatus::class];} protected static function booted():void {static::addGlobalScope('publicPublished',fn(Builder $q)=>$q->where(function($w){$w->where('status','published')->orWhere('organizer_id',auth()->id());}));} public function organizer(){return $this->belongsTo(User::class,'organizer_id');} public function venue(){return $this->belongsTo(Venue::class);} public function ticketTypes(){return $this->hasMany(TicketCategory::class);} public function bookings(){return $this->hasMany(Booking::class);} public function announcements(){return $this->hasMany(EventAnnouncement::class);} public function scopeCity(Builder $q,?string $v):Builder{return $v?$q->where('city',$v):$q;} public function scopeUpcoming(Builder $q):Builder{return $q->where('starts_at','>=',now());} public function scopeCategory(Builder $q,?string $v):Builder{return $v?$q->where('category',$v):$q;} }

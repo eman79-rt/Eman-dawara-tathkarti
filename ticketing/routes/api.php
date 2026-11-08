@@ -1,0 +1,4 @@
+<?php
+use Illuminate\Support\Facades\Route; use App\Http\Controllers\Api\EventController; use App\Http\Controllers\Api\BookingController;
+Route::get('/events',[EventController::class,'index']); Route::get('/events/{event}',[EventController::class,'show']);
+Route::middleware('auth:sanctum')->group(function(){Route::get('/me/events',[EventController::class,'mine']);Route::post('/events',[EventController::class,'store']);Route::patch('/events/{event}',[EventController::class,'update']);Route::post('/events/{event}/cancel',[EventController::class,'cancel']);Route::post('/events/{event}/announcements',[BookingController::class,'announcement']);Route::post('/bookings',[BookingController::class,'store']);Route::post('/holds',[BookingController::class,'hold']);Route::post('/holds/{booking}/confirm',[BookingController::class,'confirm']);Route::get('/bookings',[BookingController::class,'index']);Route::get('/bookings/{booking}',[BookingController::class,'show']);});

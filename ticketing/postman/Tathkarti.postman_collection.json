@@ -1,0 +1,157 @@
+{
+  "info": {
+    "name": "Tathkarti Laravel 13 API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Set baseUrl and token variables; use seed output tokens."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "buyerToken",
+      "value": ""
+    },
+    {
+      "key": "organizerToken",
+      "value": ""
+    },
+    {
+      "key": "eventId",
+      "value": "1"
+    },
+    {
+      "key": "categoryId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public events (paginated)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/events?city=دمشق&category=music"
+      }
+    },
+    {
+      "name": "Purchase (fast response; jobs appear on Horizon)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{buyerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "purchase-demo-001"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_id\": {{eventId}},\n  \"items\": [{\"ticket_category_id\": {{categoryId}}, \"quantity\": 2}]\n}"
+        },
+        "url": "{{baseUrl}}/api/bookings"
+      }
+    },
+    {
+      "name": "Create temporary 10-minute hold",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{buyerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"event_id\":{{eventId}},\"items\":[{\"ticket_category_id\":{{categoryId}},\"quantity\":1}]}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/api/holds"
+      }
+    },
+    {
+      "name": "Confirm temporary hold",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{buyerToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/holds/{{bookingId}}/confirm"
+      }
+    },
+    {
+      "name": "Reject over max (quantity 99)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{buyerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"event_id\":{{eventId}},\"items\":[{\"ticket_category_id\":{{categoryId}},\"quantity\":99}]}"
+        },
+        "url": "{{baseUrl}}/api/bookings"
+      }
+    },
+    {
+      "name": "Organizer announcement -> bulk queue",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{organizerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"message\":\"تغيّر باب الدخول\"}"
+        },
+        "url": "{{baseUrl}}/api/events/{{eventId}}/announcements"
+      }
+    },
+    {
+      "name": "Cancel event",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{organizerToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/events/{{eventId}}/cancel"
+      }
+    }
+  ]
+}

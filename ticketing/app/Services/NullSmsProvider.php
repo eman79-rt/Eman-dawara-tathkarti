@@ -1,0 +1,1 @@
+<?php namespace App\Services; use App\Contracts\SmsProvider; use Illuminate\Support\Facades\Http; class NullSmsProvider implements SmsProvider {public function send(string $to,string $message,string $dedupeKey):void {Http::withHeaders(['Idempotency-Key'=>$dedupeKey])->post(config('services.sms.endpoint'),['to'=>$to,'message'=>$message])->throw();}}
